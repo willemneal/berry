@@ -1,0 +1,31 @@
+{
+  "name": "@yarnpkg/eslint-plugin-pnp",
+  "version": "0.0.0",
+  "nextVersion": {
+    "nonce": "XXX"
+  },
+  "main": "./sources/index.ts",
+  "devDependencies": {
+    "eslint": "^3.18.0 || 4 || 5 || 6",
+    "eslint-plugin-import": "^2.18.2",
+    "mocha": "^3.1.2"
+  },
+  "peerDependencies": {
+    "eslint": "^3.18.0 || ^4.0.0 || ^5.0.0 || ^6.0.0"
+  },
+  "scripts": {
+    "test:eslint-plugin-pnp": "run test:unit packages/yarnpkg-eslint-plugin-pnp",
+    "test:watch:eslint-plugin-pnp": "run test:unit --watch packages/yarnpkg-eslint-plugin-pnp"
+  },
+  "publishConfig": {
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts"
+  },
+  "files": [
+    "/lib/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/yarnpkg/berry.git"
+  }
+}
