@@ -25,7 +25,7 @@ ruleTester.run("no-node-module-string", rule, {
     'var foo = "modules";',
     "var foo = /([abc]) \\1/g;",
     "var foo = 'a random string';",
-    '// Comment node_modules'
+    '// Comment node_modules',
   ],
   invalid: [
     {
@@ -33,45 +33,45 @@ ruleTester.run("no-node-module-string", rule, {
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
+          type: "Literal",
+        },
+      ],
     },
     {
       code: 'var foo = "node_modules/module-x";',
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
+          type: "Literal",
+        },
+      ],
     },
     {
       code: 'var foo = "../../node_modules";',
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
+          type: "Literal",
+        },
+      ],
     },
     {
       code: 'var foo = "./node_modules/module-x/node_modules";',
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
+          type: "Literal",
+        },
+      ],
     },
     {
       code: 'var foo = require("node_modules/module-x");',
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
+          type: "Literal",
+        },
+      ],
     },
     {
       code:
@@ -79,9 +79,9 @@ ruleTester.run("no-node-module-string", rule, {
       errors: [
         {
           message: "Don't use node_modules in strings. Import modules by their names.",
-          type: "Literal"
-        }
-      ]
-    }
-  ]
+          type: "Literal",
+        },
+      ],
+    },
+  ],
 });
