@@ -4,31 +4,33 @@
  */
 
 "use strict";
+import {Rule} from "eslint";
 
 //------------------------------------------------------------------------------
 // Rule Definition
 //------------------------------------------------------------------------------
 
-module.exports = {
+const rule: Rule.RuleModule = {
   meta: {
-    type: "suggestion",
-
     docs: {
       description: "disallow node_modules in string literals",
-      category: "Best Practices"
+      category: "Best Practices",
       // recommended: false,
       // url: ""
     },
 
-    schema: []
+    schema: [],
   },
 
   create(context) {
     return {
       Literal(node) {
-        if (typeof node.value !== "string") {
+        // Guard because types don't understand Selectors
+        if (node.type !== "Literal")
           return;
-        }
+
+        if (node.raw === undefined)
+          return;
 
         const match = node.raw.match(/node_modules/g);
 
@@ -37,10 +39,13 @@ module.exports = {
             node,
             message:
               "Don't use node_modules in strings. Import modules by their names.",
-            data: { string: node.raw }
+            data: {string: node.raw},
           });
         }
-      }
+      },
     };
-  }
+  },
 };
+
+
+module.exports = rule;
