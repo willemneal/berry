@@ -27,7 +27,7 @@ Add `@yarnpkg/eslint-plugin-pnp/maintainer` to the extends section of your `.esl
 ```json
 {
   // Use the maintainer config
-  extends: ["@yarnpkg/eslint-plugin-pnp/maintainer"] 
+  extends: ["plugin:@yarnpkg/eslint-plugin-pnp/maintainer"] 
 }
 ```
 *Recommended usage
