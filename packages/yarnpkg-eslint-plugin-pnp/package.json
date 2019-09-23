@@ -18,7 +18,10 @@
   },
   "scripts": {
     "test:eslint-plugin-pnp": "run test:unit packages/yarnpkg-eslint-plugin-pnp",
-    "test:watch:eslint-plugin-pnp": "run test:unit --watch packages/yarnpkg-eslint-plugin-pnp"
+    "test:watch:eslint-plugin-pnp": "run test:unit --watch packages/yarnpkg-eslint-plugin-pnp",
+    "postpack": "rm -rf lib",
+    "prepack": "mkdir -p lib && rsync -a --include '*.d.ts' --exclude '*.ts' sources/ lib/ && run build:compile packages/yarnpkg-eslint-plugin-pnp",
+    "release": "yarn npm publish"
   },
   "publishConfig": {
     "main": "./lib/index.js",
