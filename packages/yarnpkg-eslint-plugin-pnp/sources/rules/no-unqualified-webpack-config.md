@@ -10,12 +10,111 @@ If the tool used `require.resolve('file-loader')`, then Webpack would load the p
 
 ## Rule Details
 
-// TODO Add correct and incorrect use cases
+This rule disallows using referencing loaders or plugins in string literals in a `webpack.config.js`.
+
+Examples of **incorrect** code for this rule:
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+module.exports = { 
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: ['babel-loader'] 
+      }]
+  }
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+var babelLoader = 'babel-loader';
+module.exports = { 
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [babelLoader]
+      }]
+  }
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+module.exports = { 
+  module: {
+    rules: [
+      {
+        test: /\.js$/, 
+        use: [{loader: 'babel-loader', options: {}}]
+      }]
+  } 
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+module.exports = { 
+  module: {
+    rules: [
+      {
+        test: /.css$/, 
+        use: [ 
+          process.env.NODE_ENV === 'production' ? 'style-loader' : 'extract-loader'
+        ],
+      }]
+  }
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/,
+module.exports = { 
+  presets: ['es2015'] 
+}
+```
+
+Examples of **correct** code for this rule:
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+module.exports = { 
+  plugins: [ 
+    require.resolve('babel-loader') 
+  ] 
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+var MiniCssExtractPlugin = require('mini-css-extract-plugin'); 
+module.exports = { 
+    loader: MiniCssExtractPlugin.loader 
+}
+```
+
+```js
+/*eslint no-unqualified-webpack-config: "error"*/
+module.exports = { 
+  module: { 
+    rules: [ 
+      { 
+        test: /.css$/, 
+        use: [ 
+          require.resolve(process.env.NODE_ENV === 'production' ? 'style-loader' : 'extract-loader') 
+        ], 
+      }] 
+  }
+}
+```
 
 ## When Not To Use It
 
 1. You're not a package maintainer
 2. Your package's `webpack.config.js` is only used during the development of your package
+3. Your webpack config isn't named exactly `webpack.config.js`
 
 ## Further Reading
 
