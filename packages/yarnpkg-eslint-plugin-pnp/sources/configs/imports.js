@@ -1,12 +1,5 @@
 // Source: https://github.com/airbnb/javascript/blob/master/packages/eslint-config-airbnb-base/rules/imports.js
 module.exports = {
-  env: {
-    es6: true
-  },
-  parserOptions: {
-    ecmaVersion: 6,
-    sourceType: "module"
-  },
   plugins: ["import"],
   settings: {
     "import/resolver": {
