@@ -33420,7 +33420,7 @@ function applyPatch(pnpapi, opts) {
 
   const patchedModules = [];
 
-  if (opts.compatibilityMode) {
+  if (opts.compatibilityMode !== false) {
     // Modern versions of `resolve` support a specific entry point that custom resolvers can use
     // to inject a specific resolution logic without having to patch the whole package.
     //
@@ -33701,7 +33701,7 @@ function makeApi(runtimeState, opts) {
   const fallbackLocators = [];
   if (runtimeState.enableTopLevelFallback === true) fallbackLocators.push(topLevelLocator);
 
-  if (opts.compatibilityMode) {
+  if (opts.compatibilityMode !== false) {
     // ESLint currently doesn't have any portable way for shared configs to
     // specify their own plugins that should be used (cf issue #10125). This
     // will likely get fixed at some point but it'll take time, so in the
@@ -34266,6 +34266,17 @@ function makeApi(runtimeState, opts) {
   };
 }
 // CONCATENATED MODULE: ./sources/loader/_entryPoint.ts
+var _entryPoint_rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
 
 
 
@@ -34280,35 +34291,54 @@ function makeApi(runtimeState, opts) {
 const localFs = Object.assign({}, external_fs_default.a);
 const nodeFs = new NodeFS_NodeFS(localFs);
 const defaultRuntimeState = $$SETUP_STATE(hydrateRuntimeState);
-let underlyingFs = new ZipOpenFS_ZipOpenFS({
+const defaultPnpapiResolution = external_path_default.a.resolve(__dirname, __filename);
+let defaultFsLayer = new ZipOpenFS_ZipOpenFS({
   baseFs: nodeFs
 });
 
-for (const virtualRoot of defaultRuntimeState.virtualRoots) underlyingFs = new VirtualFS_VirtualFS(virtualRoot, {
-  baseFs: underlyingFs
+for (const virtualRoot of defaultRuntimeState.virtualRoots) defaultFsLayer = new VirtualFS_VirtualFS(virtualRoot, {
+  baseFs: defaultFsLayer
 });
 
-const api = Object.assign(makeApi(defaultRuntimeState, {
-  compatibilityMode: true,
-  fakeFs: underlyingFs,
-  pnpapiResolution: external_path_default.a.resolve(__dirname, __filename)
+const defaultApi = Object.assign(makeApi(defaultRuntimeState, {
+  fakeFs: defaultFsLayer,
+  pnpapiResolution: defaultPnpapiResolution
 }), {
-  makeApi: opts => {
-    const apiRuntimeState = typeof opts.basePath !== `undefined` ? $$SETUP_STATE(hydrateRuntimeState, opts.basePath) : defaultRuntimeState;
-    return makeApi(apiRuntimeState, opts);
+  /**
+   * Can be used to generate a different API than the default one (for example
+   * to map it on `/` rather than the local directory path, or to use a
+   * different FS layer than the default one).
+   */
+  makeApi: _a => {
+    var {
+      basePath = undefined,
+      fakeFs = defaultFsLayer,
+      pnpapiResolution = defaultPnpapiResolution
+    } = _a,
+        rest = _entryPoint_rest(_a, ["basePath", "fakeFs", "pnpapiResolution"]);
+
+    const apiRuntimeState = typeof basePath !== `undefined` ? $$SETUP_STATE(hydrateRuntimeState, basePath) : defaultRuntimeState;
+    return makeApi(apiRuntimeState, Object.assign({
+      fakeFs,
+      pnpapiResolution
+    }, rest));
   },
-  setup: () => {
-    applyPatch(api, {
-      compatibilityMode: true,
-      fakeFs: underlyingFs
+
+  /**
+   * Will inject the specified API into the environment, monkey-patching FS. Is
+   * automatically called when the hook is loaded through `--require`.
+   */
+  setup: api => {
+    applyPatch(api || defaultApi, {
+      fakeFs: defaultFsLayer
     });
   }
 }); // eslint-disable-next-line arca/no-default-export
 
-/* harmony default export */ var _entryPoint = __webpack_exports__["default"] = (api);
+/* harmony default export */ var _entryPoint = __webpack_exports__["default"] = (defaultApi);
 
 if (__non_webpack_module__.parent && __non_webpack_module__.parent.id === 'internal/preload') {
-  api.setup();
+  defaultApi.setup();
 
   if (__non_webpack_module__.filename) {
     // We delete it from the cache in order to support the case where the CLI resolver is invoked from "yarn run"
@@ -34334,7 +34364,7 @@ if (process.mainModule === __non_webpack_module__) {
 
   const processResolution = (request, issuer) => {
     try {
-      reportSuccess(api.resolveRequest(request, issuer));
+      reportSuccess(defaultApi.resolveRequest(request, issuer));
     } catch (error) {
       reportError(error.code, error.message, error.data);
     }
